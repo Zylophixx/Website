@@ -115,6 +115,11 @@ nav button:hover {
   transform: translateY(0);
 }
 
+/* Animation will only trigger once */
+.slide-up.animate {
+  animation-fill-mode: forwards;
+}
+
 /* Staggered animation delays for grid items */
 .slide-up:nth-child(1) { transition-delay: 0.1s; }
 .slide-up:nth-child(2) { transition-delay: 0.2s; }
@@ -133,6 +138,7 @@ nav button:hover {
 .slide-left.animate {
   opacity: 1;
   transform: translateX(0);
+  animation-fill-mode: forwards;
 }
 
 .slide-right {
@@ -144,6 +150,7 @@ nav button:hover {
 .slide-right.animate {
   opacity: 1;
   transform: translateX(0);
+  animation-fill-mode: forwards;
 }
 
 /* Staggered animation delays for horizontal slides */
@@ -164,6 +171,7 @@ nav button:hover {
 
 .fade-in.animate {
   opacity: 1;
+  animation-fill-mode: forwards;
 }
 
 /* Scale in animation */
@@ -176,6 +184,7 @@ nav button:hover {
 .scale-in.animate {
   opacity: 1;
   transform: scale(1);
+  animation-fill-mode: forwards;
 }
 
 /* Slide down animation */
@@ -188,6 +197,7 @@ nav button:hover {
 .slide-down.animate {
   opacity: 1;
   transform: translateY(0);
+  animation-fill-mode: forwards;
 }
 
 /* Rotate in animation */
@@ -200,6 +210,7 @@ nav button:hover {
 .rotate-in.animate {
   opacity: 1;
   transform: rotate(0deg) scale(1);
+  animation-fill-mode: forwards;
 }
 
 /* Bounce in animation */
@@ -212,6 +223,7 @@ nav button:hover {
 .bounce-in.animate {
   opacity: 1;
   transform: scale(1);
+  animation-fill-mode: forwards;
 }
 
 /* Flip in animation */
@@ -224,6 +236,7 @@ nav button:hover {
 .flip-in.animate {
   opacity: 1;
   transform: rotateY(0deg);
+  animation-fill-mode: forwards;
 }
 
 /* Slide in from bottom with bounce */
@@ -236,6 +249,18 @@ nav button:hover {
 .slide-bounce.animate {
   opacity: 1;
   transform: translateY(0);
+  animation-fill-mode: forwards;
+}
+
+/* Fixed navigation styles */
+nav {
+  position: fixed !important;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 /* Parallax scroll effect */

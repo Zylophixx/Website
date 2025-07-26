@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useEffect, useRef } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, Home, Instagram, Mail } from 'lucide-react';
 import FloatingIcons from "./components/FloatingIcons";
+import SplashScreen from "./components/SplashScreen";
 
 interface VideoPlayerProps {
   src: string;
@@ -105,7 +106,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, poster, title, aspectRat
 
 const FloatingNavbar: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const scrollToSection = (sectionId: string, event?: React.MouseEvent) => {
     if (event) {
@@ -121,6 +121,13 @@ const FloatingNavbar: React.FC = () => {
       setActiveSection(sectionId);
     }
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Update active section based on scroll position
+      // This is a simple implementation - you could make it more sophisticated
+    };
+  }, []);
 
   const openInstagram = () => {
     window.open('https://www.instagram.com/aamir.naqvii/', '_blank');
@@ -183,15 +190,35 @@ const FloatingNavbar: React.FC = () => {
 };
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const cinematicRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
   const socialMediaRef = useRef<HTMLDivElement>(null);
   const [isSocialMediaVisible, setIsSocialMediaVisible] = useState(false);
+  const [hasSocialMediaAnimated, setHasSocialMediaAnimated] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const [isHeroVisible, setIsHeroVisible] = useState(false);
+  const [hasHeroAnimated, setHasHeroAnimated] = useState(false);
   const contactRef = useRef<HTMLDivElement>(null);
   const [isContactVisible, setIsContactVisible] = useState(false);
+  const [hasContactAnimated, setHasContactAnimated] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+
+  const handleLoadingComplete = () => {
+    setIsLoading(false);
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+      });
+    }
+  };
 
   useEffect(() => {
     // Scroll position tracking for parallax effects
@@ -206,6 +233,9 @@ function App() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsHeroVisible(true);
+          if (!hasHeroAnimated) {
+            setHasHeroAnimated(true);
+          }
         }
       },
       {
@@ -223,8 +253,9 @@ function App() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-        } else {
-          setIsVisible(false);
+          if (!hasAnimated) {
+            setHasAnimated(true);
+          }
         }
       },
       {
@@ -242,8 +273,9 @@ function App() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsSocialMediaVisible(true);
-        } else {
-          setIsSocialMediaVisible(false);
+          if (!hasSocialMediaAnimated) {
+            setHasSocialMediaAnimated(true);
+          }
         }
       },
       {
@@ -261,8 +293,9 @@ function App() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsContactVisible(true);
-        } else {
-          setIsContactVisible(false);
+          if (!hasContactAnimated) {
+            setHasContactAnimated(true);
+          }
         }
       },
       {
@@ -368,6 +401,10 @@ function App() {
     }
   ];
 
+  if (isLoading) {
+    return <SplashScreen onLoadingComplete={handleLoadingComplete} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <FloatingNavbar /> 
@@ -402,35 +439,21 @@ function App() {
           <div className="relative z-10">
             {/* Hero Content */}
             <div className="text-center mb-8 md:mb-15">
-              <h1 className={`text-4xl sm:text-6xl md:text-8xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent text-glow-purple slide-down delay-200 ${isHeroVisible ? 'animate' : ''}`}>
+              <h1 className={`text-4xl sm:text-6xl md:text-8xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent text-glow-purple slide-down delay-200 ${hasHeroAnimated ? 'animate' : ''}`}>
                 Aamir Naqvi
               </h1>
-              <p className={`text-lg sm:text-xl md:text-2xl text-gray-300 mb-6 md:mb-8 max-w-2xl mx-auto px-4 text-glow-gray fade-in delay-400 ${isHeroVisible ? 'animate' : ''}`}>
+              <p className={`text-lg sm:text-xl md:text-2xl text-gray-300 mb-6 md:mb-8 max-w-2xl mx-auto px-4 text-glow-gray fade-in delay-400 ${hasHeroAnimated ? 'animate' : ''}`}>
                 Crafting compelling visual stories through the art of editing
               </p>
-              <div className={`flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4 mb-8 md:mb-16 px-4 slide-up delay-600 ${isHeroVisible ? 'animate' : ''}`}>
+              <div className={`flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4 mb-8 md:mb-16 px-4 slide-up delay-600 ${hasHeroAnimated ? 'animate' : ''}`}>
                 <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById('videos')?.scrollIntoView({ 
-                      behavior: 'smooth',
-                      block: 'start',
-                      inline: 'nearest'
-                    });
-                  }}
+                  onClick={() => scrollToSection('videos')}
                   className="px-6 sm:px-8 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-all duration-300 w-full sm:w-auto text-glow-white bounce-in delay-700"
                 >
                   View Work
                 </button>
                 <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById('contact')?.scrollIntoView({ 
-                      behavior: 'smooth',
-                      block: 'start',
-                      inline: 'nearest'
-                    });
-                  }}
+                  onClick={() => scrollToSection('contact')}
                   className="px-6 sm:px-8 py-3 border border-gray-400 hover:border-white rounded-lg font-medium transition-all duration-300 w-full sm:w-auto text-glow-white bounce-in delay-800"
                 >
                   Contact Me
@@ -441,8 +464,8 @@ function App() {
             {/* Showreel */}
             <div className="max-w-6xl mx-auto">
               <div className={`relative z-10 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-12 shadow-2xl bg-gradient-to-br from-[#1e3a8a]/20 via-[#1e40af]/15 to-[#3730a3]/20 scale-in delay-900 ${isHeroVisible ? 'animate' : ''}`}>
-                <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6 md:mb-8 text-white px-10 text-glow-purple slide-down delay-1000 ${isHeroVisible ? 'animate' : ''}`}>Showreel</h2>
-                <div className={`flip-in delay-1000 ${isHeroVisible ? 'animate' : ''}`}>
+                <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6 md:mb-8 text-white px-10 text-glow-purple slide-down delay-1000 ${hasHeroAnimated ? 'animate' : ''}`}>Showreel</h2>
+                <div className={`flip-in delay-1000 ${hasHeroAnimated ? 'animate' : ''}`}>
                   <VideoPlayer
                   src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
                   poster="https://images.pexels.com/photos/1112598/pexels-photo-1112598.jpeg?auto=compress&cs=tinysrgb&w=1200"
@@ -482,18 +505,18 @@ function App() {
         <div className="absolute bottom-1/4 right-[85%] w-64 h-64 bg-[#1e3a8a]/25 rounded-full blur-3xl parallax-fast" style={{ transform: `translateY(${scrollY * -0.08}px)` }}></div>
         
         <div className="max-w-6xl mx-auto">
-          <div className={`relative z-10 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-12 shadow-2xl bg-gradient-to-br from-[#1e3a8a]/20 via-[#1e40af]/15 to-[#3730a3]/20 slide-bounce ${isVisible ? 'animate' : ''}`}>
-            <div className={`text-center mb-8 md:mb-12 fade-in delay-200 ${isVisible ? 'animate' : ''}`}>
-              <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent px-4 text-glow-blue slide-up delay-300 ${isVisible ? 'animate' : ''}`}>
+          <div className={`relative z-10 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-12 shadow-2xl bg-gradient-to-br from-[#1e3a8a]/20 via-[#1e40af]/15 to-[#3730a3]/20 slide-bounce ${hasAnimated ? 'animate' : ''}`}>
+            <div className={`text-center mb-8 md:mb-12 fade-in delay-200 ${hasAnimated ? 'animate' : ''}`}>
+              <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent px-4 text-glow-blue slide-up delay-300 ${hasAnimated ? 'animate' : ''}`}>
                 Cinematic Projects
               </h2>
-              <p className={`text-gray-300 text-center mb-0 max-w-2xl mx-auto px-4 text-glow-gray slide-up delay-400 ${isVisible ? 'animate' : ''}`}>
+              <p className={`text-gray-300 text-center mb-0 max-w-2xl mx-auto px-4 text-glow-gray slide-up delay-400 ${hasAnimated ? 'animate' : ''}`}>
                 Wide-format content including commercials, music videos, and documentaries
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
               {landscapeVideos.map((video, index) => (
-                <div key={index} className={`slide-up delay-${(index + 5) * 100} ${isVisible ? 'animate' : ''}`}>
+                <div key={index} className={`slide-up delay-${(index + 5) * 100} ${hasAnimated ? 'animate' : ''}`}>
                   <VideoPlayer
                     src={video.src}
                     poster={video.poster}
@@ -533,12 +556,12 @@ function App() {
         <div className="absolute bottom-1/3 left-[85%] w-64 h-64 bg-[#1e40af]/30 rounded-full blur-3xl parallax-fast" style={{ transform: `translateY(${scrollY * -0.1}px)` }}></div>
         
         <div className="max-w-6xl mx-auto">
-          <div className={`relative z-10 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-12 shadow-2xl bg-gradient-to-br from-[#1e3a8a]/20 via-[#7c3aed]/15 to-[#3730a3]/20 scale-in ${isSocialMediaVisible ? 'animate' : ''}`}>
-            <div className={`text-center mb-8 md:mb-12 fade-in delay-200 ${isSocialMediaVisible ? 'animate' : ''}`}>
-              <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent px-4 text-glow-purple flip-in delay-300 ${isSocialMediaVisible ? 'animate' : ''}`}>
+          <div className={`relative z-10 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-12 shadow-2xl bg-gradient-to-br from-[#1e3a8a]/20 via-[#7c3aed]/15 to-[#3730a3]/20 scale-in ${hasSocialMediaAnimated ? 'animate' : ''}`}>
+            <div className={`text-center mb-8 md:mb-12 fade-in delay-200 ${hasSocialMediaAnimated ? 'animate' : ''}`}>
+              <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent px-4 text-glow-purple flip-in delay-300 ${hasSocialMediaAnimated ? 'animate' : ''}`}>
                 Social Media Content
               </h2>
-              <p className={`text-gray-300 text-center mb-0 max-w-2xl mx-auto px-4 text-glow-gray slide-down delay-400 ${isSocialMediaVisible ? 'animate' : ''}`}>
+              <p className={`text-gray-300 text-center mb-0 max-w-2xl mx-auto px-4 text-glow-gray slide-down delay-400 ${hasSocialMediaAnimated ? 'animate' : ''}`}>
                 Vertical content optimized for mobile platforms and social media
               </p>
             </div>
@@ -548,7 +571,7 @@ function App() {
                   key={index} 
                   className={`${
                     index % 2 === 0 ? 'slide-left' : 'slide-right'
-                  } delay-${(index + 5) * 100} ${isSocialMediaVisible ? 'animate' : ''}`}
+                  } delay-${(index + 5) * 100} ${hasSocialMediaAnimated ? 'animate' : ''}`}
                 >
                   <VideoPlayer
                     src={video.src}
@@ -589,12 +612,12 @@ function App() {
         <div className="absolute bottom-1/4 right-[80%] w-80 h-80 bg-[#1e3a8a]/25 rounded-full blur-3xl parallax-fast" style={{ transform: `translateY(${scrollY * -0.06}px)` }}></div>
         
         <div className="max-w-4xl mx-auto text-center">
-          <div className={`relative z-10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl bg-gradient-to-br from-[#1e3a8a]/20 via-[#1e40af]/15 to-[#3730a3]/20 bounce-in ${isContactVisible ? 'animate' : ''}`}>
-            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-white px-4 text-glow-white slide-down delay-200 ${isContactVisible ? 'animate' : ''}`}>Let's Create Something Amazing</h2>
-            <p className={`text-lg sm:text-xl text-gray-300 mb-6 md:mb-8 px-4 text-glow-gray fade-in delay-400 ${isContactVisible ? 'animate' : ''}`}>
+          <div className={`relative z-10 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl bg-gradient-to-br from-[#1e3a8a]/20 via-[#1e40af]/15 to-[#3730a3]/20 bounce-in ${hasContactAnimated ? 'animate' : ''}`}>
+            <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-white px-4 text-glow-white slide-down delay-200 ${hasContactAnimated ? 'animate' : ''}`}>Let's Create Something Amazing</h2>
+            <p className={`text-lg sm:text-xl text-gray-300 mb-6 md:mb-8 px-4 text-glow-gray fade-in delay-400 ${hasContactAnimated ? 'animate' : ''}`}>
               Ready to bring your vision to life? Get in touch to discuss your next project.
             </p>
-            <button className={`px-8 sm:px-12 py-3 md:py-4 bg-white text-gray-900 rounded-lg font-medium hover:bg-gray-100 transition-all duration-300 mx-4 text-glow scale-in delay-600 ${isContactVisible ? 'animate' : ''}`}>
+            <button className={`px-8 sm:px-12 py-3 md:py-4 bg-white text-gray-900 rounded-lg font-medium hover:bg-gray-100 transition-all duration-300 mx-4 text-glow scale-in delay-600 ${hasContactAnimated ? 'animate' : ''}`}>
               Start a Project
             </button>
           </div>
